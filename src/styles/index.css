@@ -4,88 +4,103 @@
 
 @layer base {
   :root {
-    --color-primary: #3b82f6;
-    --color-primary-dark: #2563eb;
-    --color-background: #ffffff;
-    --color-foreground: #111827;
+    /* Light mode */
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --accent: #0891b2;
+    --accent-hover: #0e7490;
   }
 
-  [data-theme="dark"] {
-    --color-background: #111827;
-    --color-foreground: #f9fafb;
+  .dark {
+    /* Dark-first (Developer Terminal) */
+    --bg: #0a0e14;
+    --surface: #0f172a;
+    --border: #1e293b;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent: #22d3ee;
+    --accent-hover: #06b6d4;
   }
 
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    @apply bg-[var(--bg)] text-[var(--text)] font-sans antialiased;
+    line-height: 1.65;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-weight: 700;
-    line-height: 1.2;
+    @apply font-mono font-semibold tracking-tight;
   }
 
   *:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
+    @apply outline-2 outline-offset-2 outline-accent;
   }
 
-  .container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 1rem;
+  ::selection {
+    background: rgba(34, 211, 238, 0.25);
   }
 }
 
 @layer components {
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    transition: all 0.2s;
-    cursor: pointer;
-    border: none;
-    text-decoration: none;
+  .container-page {
+    @apply mx-auto w-full max-w-container px-4 sm:px-6 lg:px-8;
   }
 
-  .btn-primary {
-    background-color: var(--color-primary);
-    color: white;
-  }
-
-  .btn-primary:hover {
-    background-color: var(--color-primary-dark);
-  }
-
-  .btn-outline {
-    background-color: transparent;
-    color: var(--color-primary);
-    border: 2px solid var(--color-primary);
-  }
-
-  .btn-outline:hover {
-    background-color: var(--color-primary);
-    color: white;
+  .section {
+    @apply py-12 md:py-16 lg:py-20;
   }
 
   .card {
-    background-color: var(--color-background);
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    @apply bg-[var(--surface)] border border-[var(--border)] rounded-md p-6
+           transition-colors duration-200;
+  }
+
+  .card:hover {
+    @apply border-accent/40 shadow-glow-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-accent text-surface-950 font-mono font-medium
+           px-5 py-2.5 rounded-md
+           hover:bg-accent-hover hover:shadow-glow
+           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed
+           transition-all duration-200;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2
+           border border-accent text-accent font-mono font-medium
+           px-5 py-2.5 rounded-md
+           hover:bg-accent/10
+           transition-all duration-200;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           text-[var(--text-muted)] font-mono
+           px-4 py-2 rounded-md
+           hover:text-accent hover:bg-accent/5
+           transition-colors duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5
+           text-xs font-mono rounded
+           bg-accent/10 text-accent border border-accent/20;
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
   }
 }

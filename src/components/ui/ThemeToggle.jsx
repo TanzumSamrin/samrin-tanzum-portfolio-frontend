@@ -1,5 +1,5 @@
 import { useTheme } from '../../context/ThemeContext'
-import { FaSun, FaMoon } from 'react-icons/fa'
+import { HiMoon, HiSun } from 'react-icons/hi'
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
@@ -7,10 +7,14 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-      aria-label="Toggle theme"
+      className="p-2 rounded-md text-[var(--text-muted)] hover:text-accent hover:bg-accent/10 transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
     >
-      {theme === 'light' ? <FaMoon size={20} /> : <FaSun size={20} />}
+      {theme === 'dark' ? (
+        <HiSun className="w-5 h-5" />
+      ) : (
+        <HiMoon className="w-5 h-5" />
+      )}
     </button>
   )
 }

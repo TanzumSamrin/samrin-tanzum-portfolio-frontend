@@ -7,25 +7,18 @@ function Experience() {
     queryKey: ['experiences'],
     queryFn: async () => {
       const response = await api.get('/experiences/')
-      return response.data
+      return Array.isArray(response.data) ? response.data : response.data.results || []
     },
   })
 
   if (isLoading) {
     return (
-      <section className="py-16 bg-gray-50 dark:bg-gray-800/50">
-        <div className="container mx-auto px-4">
-          <Skeleton className="h-8 w-48 mx-auto mb-12" />
-          <div className="space-y-8 max-w-3xl mx-auto">
+      <section className="section">
+        <div className="container-page">
+          <Skeleton className="h-8 w-48 mb-10" />
+          <div className="space-y-6">
             {[...Array(2)].map((_, i) => (
-              <div key={i} className="flex gap-4">
-                <Skeleton className="w-2 h-2 rounded-full mt-2" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                  <Skeleton className="h-4 w-full" />
-                </div>
-              </div>
+              <Skeleton key={i} className="h-28 w-full" />
             ))}
           </div>
         </div>
@@ -33,44 +26,55 @@ function Experience() {
     )
   }
 
-  if (!experiences?.length) return null
+  const list = experiences || []
+  if (!list.length) return null
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return ''
+    const d = new Date(dateStr)
+    return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+  }
 
   return (
-    <section className="py-16 bg-gray-50 dark:bg-gray-800/50">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
+    <section className="section border-t border-[var(--border)]">
+      <div className="container-page">
+        <p className="font-mono text-sm text-accent mb-3">
+          <span className="text-[var(--text-muted)]">//</span> experience
+        </p>
+        <h2 className="text-2xl sm:text-3xl font-mono font-semibold text-[var(--text)] mb-10">
           Experience
         </h2>
-        
-        <div className="max-w-3xl mx-auto">
-          {experiences.map((exp, index) => (
-            <div key={exp.id} className="relative pl-8 pb-8 last:pb-0">
-              {index < experiences.length - 1 && (
-                <div className="absolute left-2 top-2 bottom-0 w-0.5 bg-primary/30" />
-              )}
-              <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-primary border-4 border-white dark:border-gray-800" />
-              
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                <div className="flex flex-wrap justify-between items-start mb-2">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    {exp.role}
+
+        <div className="relative border-l border-[var(--border)] ml-3 space-y-10">
+          {list.map((exp) => (
+            <div key={exp.id} className="relative pl-8">
+              {/* Timeline dot */}
+              <span className="absolute left-0 top-1.5 -translate-x-1/2 w-3 h-3 rounded-full bg-accent border-2 border-[var(--bg)]" />
+
+              <div className="card">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-2">
+                  <h3 className="font-mono text-base text-[var(--text)]">
+                    {exp.role || exp.position}
                   </h3>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {new Date(exp.start_date).getFullYear()} -{' '}
-                    {exp.is_current ? 'Present' : new Date(exp.end_date).getFullYear()}
+                  <span className="font-mono text-xs text-[var(--text-muted)]">
+                    {formatDate(exp.start_date)}
+                    {' — '}
+                    {exp.is_current ? 'Present' : formatDate(exp.end_date)}
                   </span>
                 </div>
-                <p className="text-gray-600 dark:text-gray-300 font-medium">
-                  {exp.company} · {exp.employment_type}
+
+                <p className="text-sm text-accent mb-3">
+                  {exp.company}
+                  {exp.location ? ` · ${exp.location}` : ''}
                 </p>
-                {exp.location && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                    {exp.location}
+
+                {exp.description && (
+                  <p className="text-sm text-[var(--text-muted)] leading-relaxed whitespace-pre-line">
+                    {exp.description.length > 200
+                      ? `${exp.description.slice(0, 200)}...`
+                      : exp.description}
                   </p>
                 )}
-                <p className="text-gray-600 dark:text-gray-300">
-                  {exp.description}
-                </p>
               </div>
             </div>
           ))}

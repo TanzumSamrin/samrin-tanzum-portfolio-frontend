@@ -6,21 +6,22 @@ import Skeleton from '../ui/Skeleton'
 
 function FeaturedProjects() {
   const { data: projects, isLoading } = useQuery({
-    queryKey: ['projects', { featured: true }],
+    queryKey: ['projects', 'featured'],
     queryFn: async () => {
-      const response = await api.get('/projects/?is_featured=true&limit=3')
-      return response.data
+      const response = await api.get('/projects/?is_featured=true')
+      const list = Array.isArray(response.data) ? response.data : response.data.results || []
+      return list.slice(0, 3)
     },
   })
 
   if (isLoading) {
     return (
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <Skeleton className="h-8 w-48 mx-auto mb-12" />
-          <div className="grid md:grid-cols-3 gap-6">
+      <section className="section">
+        <div className="container-page">
+          <Skeleton className="h-8 w-56 mb-10" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className="h-64 w-full" />
+              <Skeleton key={i} className="h-72 w-full" />
             ))}
           </div>
         </div>
@@ -28,24 +29,28 @@ function FeaturedProjects() {
     )
   }
 
-  if (!projects?.length) return null
+  const list = projects || []
+  if (!list.length) return null
 
   return (
-    <section className="py-16">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
+    <section className="section border-t border-[var(--border)]">
+      <div className="container-page">
+        <p className="font-mono text-sm text-accent mb-3">
+          <span className="text-[var(--text-muted)]">//</span> projects
+        </p>
+        <h2 className="text-2xl sm:text-3xl font-mono font-semibold text-[var(--text)] mb-10">
           Featured Projects
         </h2>
-        
-        <div className="grid md:grid-cols-3 gap-6">
-          {projects.map((project) => (
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {list.map((project) => (
             <Link
               key={project.id}
               to={`/projects/${project.slug}`}
-              className="group bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700"
+              className="card group overflow-hidden p-0 flex flex-col"
             >
-              {project.cover_image && (
-                <div className="aspect-video overflow-hidden">
+              {project.cover_image ? (
+                <div className="aspect-video overflow-hidden border-b border-[var(--border)]">
                   <img
                     src={project.cover_image}
                     alt={project.title}
@@ -53,32 +58,27 @@ function FeaturedProjects() {
                     loading="lazy"
                   />
                 </div>
+              ) : (
+                <div className="aspect-video bg-[var(--border)] flex items-center justify-center border-b border-[var(--border)]">
+                  <span className="font-mono text-[var(--text-muted)] text-sm">No image</span>
+                </div>
               )}
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-primary transition-colors">
+
+              <div className="p-5 flex flex-col flex-1">
+                <h3 className="font-mono text-base text-[var(--text)] group-hover:text-accent transition-colors mb-2">
                   {project.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  {project.summary}
+                <p className="text-sm text-[var(--text-muted)] line-clamp-2 flex-1">
+                  {project.summary || project.description?.slice(0, 100)}
                 </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {project.tech_stack?.slice(0, 3).map((tech) => (
-                    <span
-                      key={tech.id}
-                      className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded"
-                    >
-                      {tech.name}
-                    </span>
-                  ))}
-                </div>
               </div>
             </Link>
           ))}
         </div>
-        
-        <div className="text-center mt-8">
+
+        <div className="mt-8 text-center">
           <Link to="/projects">
-            <Button variant="outline">See All Projects</Button>
+            <Button variant="outline">See all projects</Button>
           </Link>
         </div>
       </div>

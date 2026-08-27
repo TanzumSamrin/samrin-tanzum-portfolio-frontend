@@ -3,22 +3,23 @@ import api from '../../api/axios'
 import Skeleton from '../ui/Skeleton'
 
 function Skills() {
-  const { data: skills, isLoading } = useQuery({
+  const { data: skillsData, isLoading } = useQuery({
     queryKey: ['skills'],
     queryFn: async () => {
       const response = await api.get('/skills/')
-      return response.data
+      // Handle both paginated and plain array responses
+      return Array.isArray(response.data) ? response.data : response.data.results || []
     },
   })
 
   if (isLoading) {
     return (
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <Skeleton className="h-8 w-48 mx-auto mb-12" />
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <Skeleton key={i} className="h-24 w-full" />
+      <section className="section">
+        <div className="container-page">
+          <Skeleton className="h-8 w-40 mb-10" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, i) => (
+              <Skeleton key={i} className="h-20 w-full" />
             ))}
           </div>
         </div>
@@ -26,58 +27,58 @@ function Skills() {
     )
   }
 
-  if (!skills?.length) return null
+  const skills = skillsData || []
+  if (!skills.length) return null
 
-  const groupedSkills = skills.reduce((acc, skill) => {
-    if (!acc[skill.category]) {
-      acc[skill.category] = []
-    }
-    acc[skill.category].push(skill)
+  // Group by category
+  const grouped = skills.reduce((acc, skill) => {
+    const cat = skill.category || 'OTHER'
+    if (!acc[cat]) acc[cat] = []
+    acc[cat].push(skill)
     return acc
   }, {})
 
-  const categoryLabels = {
-    FRONTEND: 'Frontend',
-    BACKEND: 'Backend',
-    DATABASE: 'Database',
-    DEVOPS: 'DevOps',
-    TOOLS: 'Tools',
-    SOFT_SKILL: 'Soft Skills',
-  }
+  const categoryLabel = (cat) =>
+    cat
+      .replace(/_/g, ' ')
+      .toLowerCase()
+      .replace(/\b\w/g, (c) => c.toUpperCase())
 
   return (
-    <section className="py-16">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
-          Skills & Expertise
+    <section className="section border-t border-[var(--border)]">
+      <div className="container-page">
+        <p className="font-mono text-sm text-accent mb-3">
+          <span className="text-[var(--text-muted)]">//</span> skills
+        </p>
+        <h2 className="text-2xl sm:text-3xl font-mono font-semibold text-[var(--text)] mb-10">
+          Skills
         </h2>
-        
-        <div className="space-y-12">
-          {Object.entries(groupedSkills).map(([category, items]) => (
+
+        <div className="space-y-10">
+          {Object.entries(grouped).map(([category, items]) => (
             <div key={category}>
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
-                {categoryLabels[category] || category}
+              <h3 className="font-mono text-sm text-[var(--text-muted)] mb-4 uppercase tracking-wider">
+                {categoryLabel(category)}
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {items.map((skill) => (
                   <div
                     key={skill.id}
-                    className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+                    className="card flex items-center justify-between gap-4 py-4"
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-gray-800 dark:text-gray-200">
-                        {skill.icon && <span className="mr-2">{skill.icon}</span>}
-                        {skill.name}
+                    <span className="font-mono text-sm text-[var(--text)]">
+                      {skill.name}
+                    </span>
+                    <div className="flex items-center gap-2 min-w-[80px]">
+                      <div className="flex-1 h-1.5 rounded-full bg-[var(--border)] overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-accent"
+                          style={{ width: `${Math.min(skill.proficiency || 0, 100)}%` }}
+                        />
+                      </div>
+                      <span className="font-mono text-xs text-[var(--text-muted)] w-8 text-right">
+                        {skill.proficiency || 0}
                       </span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {skill.proficiency}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div
-                        className="bg-primary h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${skill.proficiency}%` }}
-                      />
                     </div>
                   </div>
                 ))}
