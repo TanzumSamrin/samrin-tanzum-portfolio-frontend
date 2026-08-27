@@ -41,61 +41,61 @@ Before running the app, make sure you have the following installed:
 
 1. Install dependencies:
 
-   ```bash
+   bash
    npm install
-   ```
+   
 
 2. Create a local environment file:
 
-   ```bash
+   bash
    cp .env.example .env
-   ```
+   
 
-   If there is no `.env.example`, create a `.env` file manually with:
+   If there is no .env.example, create a .env file manually with:
 
-   ```env
+   env
    VITE_API_URL=http://localhost:8000
-   ```
+   
 
    Adjust the URL to match your backend API.
 
 3. Start the development server:
 
-   ```bash
+   bash
    npm run dev
-   ```
+   
 
 4. Open the app in your browser:
 
-   ```text
+   text
    http://localhost:5173
-   ```
+   
 
 ## Available Scripts
 
-```bash
+bash
 npm run dev
-```
+
 Starts the Vite development server.
 
-```bash
+bash
 npm run build
-```
+
 Builds the app for production.
 
-```bash
+bash
 npm run preview
-```
+
 Serves the production build locally.
 
-```bash
+bash
 npm run lint
-```
+
 Runs ESLint checks across the project.
 
 ## Project Structure
 
-```text
+text
 src/
   api/              API configuration and Axios instance
   components/       Reusable UI and page components
@@ -105,7 +105,7 @@ src/
   routes/           App routing and protected route logic
   styles/           Global CSS and Tailwind setup
   utils/            Helper utilities
-```
+
 
 ## Notes
 
